@@ -45,7 +45,27 @@ def load_pieces():
 def main():
     clock = pygame.time.Clock()
     load_pieces()
-    print("Chess game started in another window.")
+
+    # 2D array for the chess board
+    # The first character is what color the piece is w = white and b = black.
+    # The second character is what piece it is.
+    # R = rook
+    # N = knight
+    # B = bishop
+    # Q = queen
+    # K = King
+    # P = Pawn
+    # -- means there is no piece at that location.
+    board = [
+        ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
+        ["bP", "bP", "bP", "bP", "bp", "bP", "bP", "bP"],
+        ["--", "--", "--", "--", "--", "--", "--", "--"],
+        ["--", "--", "--", "--", "--", "--", "--", "--"],
+        ["--", "--", "--", "--", "--", "--", "--", "--"],
+        ["--", "--", "--", "--", "--", "--", "--", "--"],
+        ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
+        ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"],
+    ]
 
     # Main game loop
     running = True
