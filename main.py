@@ -1,3 +1,5 @@
+import os
+
 import pygame
 import sys
 
@@ -18,6 +20,9 @@ LIGHT_RGB = (238, 238, 210)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess game")
 
+# Global dictionary for piece textures
+IMAGES = {}
+
 def draw_board(screen):
     for row in range(DIMENSION):
         for col in range(DIMENSION):
@@ -28,10 +33,19 @@ def draw_board(screen):
             square_rect = pygame.Rect(col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE)
             pygame.draw.rect(screen, square_color, square_rect)
 
+
+def load_pieces():
+    """ Loads the piece textures from the 'images' directory. '"""
+    pieces = ['wR', 'wN', 'wB', 'wQ', 'wK', 'wP', 'bR', 'bN', 'bB', 'bQ', 'bK', 'bP']
+    for piece in pieces:
+        IMAGES[piece] = pygame.transform.smoothscale(
+            pygame.image.load(f"images/{piece}.svg"), (SQ_SIZE, SQ_SIZE),
+        )
+
 def main():
     clock = pygame.time.Clock()
-
-    board = [[]]
+    load_pieces()
+    print("Chess game started in another window.")
 
     # Main game loop
     running = True
