@@ -71,6 +71,34 @@ def is_valid_move(board, start, end):
     if target != "--" and piece[0] == target[0]:
         return False
 
+    piece_color = piece[0]
+    piece_type = piece[1]
+
+    row_diff  = end_row - start_row
+    col_diff = end_col - start_col
+
+    # --- ROOK RULES ---
+    if piece_type == 'R':
+        if row_diff != 0 and col_diff != 0:
+            return False
+
+        # Check for path blocking.
+        if row_diff == 0:
+            # Horizontal movement
+            step = 1 if col_diff > 1 else -1
+
+            # Goes through the move and verifies that the player did not jump over a piece horizontally
+            for c in range(start_col + step, end_col, step):
+                if board[start_col][c] != "--":
+                    return False
+
+        elif col_diff == 0:
+            step = 1 if row_diff > 1 else -1
+
+            for r in range(start_row + step, end_row, step):
+                if board[start_row][r] != "--":
+                    return False
+
     return True
 
 def main():
