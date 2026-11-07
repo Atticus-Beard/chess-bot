@@ -23,7 +23,7 @@ pygame.display.set_caption("Chess game")
 # Global dictionary for piece textures
 IMAGES = {}
 
-def draw_board(screen):
+def draw_board(screen, selected_piece):
     for row in range(DIMENSION):
         for col in range(DIMENSION):
             # Alternate colors based on whether the sum of row and col is even
@@ -33,14 +33,45 @@ def draw_board(screen):
             square_rect = pygame.Rect(col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE)
             pygame.draw.rect(screen, square_color, square_rect)
 
+            # Highlight the selected piece
+            if selected_piece == (row, col):
+                highlight_surface = pygame.Surface((SQ_SIZE, SQ_SIZE), pygame.SRCALPHA)
+                highlight_surface.fill((255, 255, 0, 120))  # Translucent yellow
+                screen.blit(highlight_surface, square_rect.topleft)
+                pygame.draw.rect(screen, (255, 215, 0), square_rect, 4)
+
+
 
 def load_pieces():
     """ Loads the piece textures from the 'images' directory. '"""
     pieces = ['wR', 'wN', 'wB', 'wQ', 'wK', 'wP', 'bR', 'bN', 'bB', 'bQ', 'bK', 'bP']
     for piece in pieces:
         IMAGES[piece] = pygame.transform.smoothscale(
-            pygame.image.load(f"images/{piece}.svg"), (SQ_SIZE, SQ_SIZE),
+            pygame.image.load(f"images/{piece}.png"), (SQ_SIZE, SQ_SIZE),
         )
+
+def draw_pieces(screen, board):
+    for row in range(DIMENSION):
+        for col in range(DIMENSION):
+            piece = board[row][col]
+            if piece != "--":
+                screen.blit(IMAGES[piece], pygame.Rect(col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
+def is_valid_move(board, start, end):
+    start_row, start_col = start
+    end_row, end_col = end
+
+    piece = board[start_row][start_col]
+    target = board[end_row][end_col]
+
+    if start == end:
+        return False
+
+    # Makes sure the piece is not capturing its own color.
+    if target != "--" and piece[0] == target[0]:
+        return False
+
+    return True
 
 def main():
     clock = pygame.time.Clock()
@@ -58,7 +89,7 @@ def main():
     # -- means there is no piece at that location.
     board = [
         ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
-        ["bP", "bP", "bP", "bP", "bp", "bP", "bP", "bP"],
+        ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
         ["--", "--", "--", "--", "--", "--", "--", "--"],
         ["--", "--", "--", "--", "--", "--", "--", "--"],
         ["--", "--", "--", "--", "--", "--", "--", "--"],
@@ -66,6 +97,8 @@ def main():
         ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
         ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"],
     ]
+
+    selected_piece = () # Keeps track of the (row, col) of the selected piece
 
     # Main game loop
     running = True
@@ -81,7 +114,24 @@ def main():
 
                 print(f"Clicked on row {row} and col {col}.")
 
-        draw_board(screen)
+                if selected_piece == (row, col):
+                    # Clicked the piece so deselect
+                    selected_piece = ()
+                elif not selected_piece:
+                    # First click. Select the piece.
+                    if board[row][col] != "--":
+                        selected_piece = (row, col)
+                else:
+                    start_row, start_col = selected_piece
+
+                    # Moves the piece in the 2d array.
+                    if is_valid_move(board, (start_row, start_col), (row, col)):
+                        board[row][col] = board[start_row][start_col]
+                        board[start_row][start_col] = "--"
+
+                    selected_piece = ()
+        draw_board(screen, selected_piece)
+        draw_pieces(screen, board)
 
         pygame.display.flip()
         clock.tick(FPS)
