@@ -83,21 +83,28 @@ def is_valid_move(board, start, end):
             return False
 
         # Check for path blocking.
-        if row_diff == 0:
-            # Horizontal movement
-            step = 1 if col_diff > 1 else -1
+        if piece_type == 'R':
+            if row_diff != 0 and col_diff != 0:
+                return False
 
-            # Goes through the move and verifies that the player did not jump over a piece horizontally
-            for c in range(start_col + step, end_col, step):
-                if board[start_col][c] != "--":
-                    return False
+            # Check for path blocking.
+            if row_diff == 0:
+                # Horizontal movement (FIXED: changed > 1 to > 0)
+                step = 1 if col_diff > 0 else -1
 
-        elif col_diff == 0:
-            step = 1 if row_diff > 1 else -1
+                for c in range(start_col + step, end_col, step):
+                    # FIXED: corrected board indices to [start_row][c]
+                    if board[start_row][c] != "--":
+                        return False
 
-            for r in range(start_row + step, end_row, step):
-                if board[start_row][r] != "--":
-                    return False
+            elif col_diff == 0:
+                # Vertical movement (FIXED: changed > 1 to > 0)
+                step = 1 if row_diff > 0 else -1
+
+                for r in range(start_row + step, end_row, step):
+                    # FIXED: corrected board indices to [r][start_col]
+                    if board[r][start_col] != "--":
+                        return False
 
     return True
 
@@ -127,6 +134,7 @@ def main():
     ]
 
     selected_piece = () # Keeps track of the (row, col) of the selected piece
+    turn = 'w' # 'w' for white who goes first and 'b' for black
 
     # Main game loop
     running = True
@@ -148,7 +156,9 @@ def main():
                 elif not selected_piece:
                     # First click. Select the piece.
                     if board[row][col] != "--":
-                        selected_piece = (row, col)
+                        if board[row][col][0] == turn:
+                            # Only selects the piece of the player whose turn it is.
+                            selected_piece = (row, col)
                 else:
                     start_row, start_col = selected_piece
 
@@ -156,6 +166,9 @@ def main():
                     if is_valid_move(board, (start_row, start_col), (row, col)):
                         board[row][col] = board[start_row][start_col]
                         board[start_row][start_col] = "--"
+
+                        # Switches the turn value to the other player.
+                        turn = 'b' if turn == 'w' else 'w'
 
                     selected_piece = ()
         draw_board(screen, selected_piece)
