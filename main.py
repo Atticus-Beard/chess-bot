@@ -104,9 +104,14 @@ def is_valid_move(board, start, end):
                 step = 1 if row_diff > 0 else -1
 
                 for r in range(start_row + step, end_row, step):
-                    # FIXED: corrected board indices to [r][start_col]
                     if board[r][start_col] != "--":
                         return False
+
+
+    if piece_type == "B":
+        # Checks that the bishop is moving only diagonally
+        if abs(col_diff) != abs(row_diff):
+            return False
 
     return True
 
