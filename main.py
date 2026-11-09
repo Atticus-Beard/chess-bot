@@ -1,4 +1,3 @@
-import os
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
@@ -25,7 +24,7 @@ pygame.display.set_caption("Chess game")
 # Global dictionary for piece textures
 IMAGES = {}
 
-def draw_board(screen, selected_piece):
+def draw_board(screen, selected_piece, valid_moves):
     for row in range(DIMENSION):
         for col in range(DIMENSION):
             # Alternate colors based on whether the sum of row and col is even
@@ -41,6 +40,12 @@ def draw_board(screen, selected_piece):
                 highlight_surface.fill((255, 255, 0, 120))  # Translucent yellow
                 screen.blit(highlight_surface, square_rect.topleft)
                 pygame.draw.rect(screen, (255, 215, 0), square_rect, 4)
+
+            if (row, col) in valid_moves:
+                center_x = col * SQ_SIZE + SQ_SIZE // 2
+                center_y = row * SQ_SIZE + SQ_SIZE // 2
+
+                pygame.draw.circle(screen, (202, 203, 179), (center_x, center_y), SQ_SIZE // 6)
 
 
 
@@ -142,6 +147,7 @@ def main():
 
     selected_piece = () # Keeps track of the (row, col) of the selected piece
     turn = 'w' # 'w' for white who goes first and 'b' for black
+    valid_moves = []
 
     # Main game loop
     running = True
@@ -159,6 +165,7 @@ def main():
 
                 if selected_piece == (row, col):
                     # Clicked the piece so deselect
+                    valid_moves = []
                     selected_piece = ()
                 elif not selected_piece:
                     # First click. Select the piece.
@@ -166,6 +173,14 @@ def main():
                         if board[row][col][0] == turn:
                             # Only selects the piece of the player whose turn it is.
                             selected_piece = (row, col)
+                            valid_moves = []
+
+                            # Get a list of valid moves.
+                            for r in range(DIMENSION):
+                                for c in range(DIMENSION):
+                                    if is_valid_move(board, selected_piece,(r, c)):
+                                        valid_moves.append((r,c))
+
                 else:
                     start_row, start_col = selected_piece
 
@@ -178,7 +193,8 @@ def main():
                         turn = 'b' if turn == 'w' else 'w'
 
                     selected_piece = ()
-        draw_board(screen, selected_piece)
+                    valid_moves = []
+        draw_board(screen, selected_piece, valid_moves)
         draw_pieces(screen, board)
 
         pygame.display.flip()
