@@ -14,6 +14,7 @@ SQ_SIZE = HEIGHT // DIMENSION
 FPS = 15
 
 # Colors (RGB)
+# Colors are from chess.com
 DARK_RGB = (118, 150, 86)
 LIGHT_RGB = (238, 238, 210)
 
@@ -112,11 +113,31 @@ def is_valid_move(board, start, end):
                     if board[r][start_col] != "--":
                         return False
 
-
+    # --- BISHOP RULES ---
     if piece_type == "B":
         # Checks that the bishop is moving only diagonally
         if abs(col_diff) != abs(row_diff):
             return False
+
+        # Check for path blocking (step diagonally in both row and col directions)
+        row_step = 1 if row_diff > 0 else -1
+        col_step = 1 if col_diff > 0 else -1
+
+        curr_row, curr_col = start_row + row_step, start_col + col_step
+
+        # Goes through all the steps of the bishop rules and validates that the piece did not hop over any pieces.
+        while(curr_row, curr_col) != (end_row, end_col):
+            if board[curr_row][curr_col] != "--":
+                return False
+
+            curr_row += row_step
+            curr_col += col_step
+
+        return True
+
+
+
+
 
     return True
 
