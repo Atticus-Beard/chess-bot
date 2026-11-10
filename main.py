@@ -97,21 +97,21 @@ def is_valid_move(board, start, end):
 
             # Check for path blocking.
             if row_diff == 0:
-                # Horizontal movement (FIXED: changed > 1 to > 0)
+                # Horizontal movement
                 step = 1 if col_diff > 0 else -1
 
                 for c in range(start_col + step, end_col, step):
-                    # FIXED: corrected board indices to [start_row][c]
                     if board[start_row][c] != "--":
                         return False
 
             elif col_diff == 0:
-                # Vertical movement (FIXED: changed > 1 to > 0)
+                # Vertical movement
                 step = 1 if row_diff > 0 else -1
 
                 for r in range(start_row + step, end_row, step):
                     if board[r][start_col] != "--":
                         return False
+
 
     # --- BISHOP RULES ---
     elif piece_type == "B":
@@ -135,7 +135,44 @@ def is_valid_move(board, start, end):
 
         return True
 
+    # --- PAWN RULES ---
+    elif piece_type == "P":
+        direction = -1 if piece_color == "w" else 1
+        start_row_base = 6 if piece_color == "w" else 1
 
+        # Move forward one square
+        if col_diff == 0 and row_diff == direction and target == "--":
+            return True
+
+        if col_diff == 0 and row_diff == 2 * direction and start_row == start_row_base:
+            return True
+
+        # Pawn captures diagonally
+        if abs(col_diff) == 1 and row_diff == direction and target != "--":
+            return True
+
+        return False
+
+    elif piece_type == "Q":
+        # Must move either straight (rook-like) or diagonally (bishop-like)
+        is_straight = (row_diff == 0 or col_diff == 0)
+        is_diagonal = (abs(row_diff) == abs(col_diff))
+
+        if not is_straight and not is_diagonal:
+            return False
+
+        row_step = 1 if row_diff > 0 else (-1 if row_diff < 0 else 0)
+        col_step = 1 if col_diff > 0 else (-1 if col_diff < 0 else 0)
+
+        curr_row, curr_col = start_row + row_step, start_col + col_step
+        while (curr_row, curr_col) != (end_row, end_col):
+            if board[curr_row][curr_col] != "--":
+                return False
+
+            curr_row += row_step
+            curr_col += col_step
+
+        return True
 
 
 
