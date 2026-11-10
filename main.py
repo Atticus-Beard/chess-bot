@@ -114,7 +114,7 @@ def is_valid_move(board, start, end):
                         return False
 
     # --- BISHOP RULES ---
-    if piece_type == "B":
+    elif piece_type == "B":
         # Checks that the bishop is moving only diagonally
         if abs(col_diff) != abs(row_diff):
             return False
