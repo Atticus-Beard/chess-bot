@@ -153,6 +153,7 @@ def is_valid_move(board, start, end):
 
         return False
 
+    # --- QUEEN RULES ---
     elif piece_type == "Q":
         # Must move either straight (rook-like) or diagonally (bishop-like)
         is_straight = (row_diff == 0 or col_diff == 0)
@@ -173,6 +174,15 @@ def is_valid_move(board, start, end):
             curr_col += col_step
 
         return True
+
+    elif piece_type == "N":
+        is_l_shape = (abs(row_diff) == 2 and abs(col_diff) == 1) or (abs(row_diff) == 1 and abs(col_diff) == 2)
+
+        if not is_l_shape:
+            return False
+
+        return True
+
 
 
 
