@@ -205,7 +205,7 @@ def main():
 
     selected_piece = () # Keeps track of the (row, col) of the selected piece
     turn = 'w' # 'w' for white who goes first and 'b' for black
-    valid_moves = []
+    valid_moves = [] # The valid moves list gets populated when you click on a piece. It is used to highlight moves as a parameter in the draw_board function.
 
     # Main game loop
     running = True
