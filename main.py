@@ -182,7 +182,7 @@ def main():
     clock = pygame.time.Clock()
     load_pieces()
 
-    # 2D array for the chess board
+    # 2D list for the chess board
     # The first character is what color the piece is w = white and b = black.
     # The second character is what piece it is.
     # R = rook
